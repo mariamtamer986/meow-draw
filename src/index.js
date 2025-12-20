@@ -1,11 +1,16 @@
+const canvasBG = document.getElementById("canvasBG");
+const ctxB = canvasBG.getContext("2d");
+canvasBG.width = window.innerWidth;
+canvasBG.height = window.innerHeight;
+
 const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
 let isDragging = false;
 let brushColor = "#000000";
 let backgroundColor = "#FFFFFF";
-let redraw = false;
 
 const brushCInput = document.getElementById("brushC");
 const backgroundInput = document.getElementById("background");
@@ -16,13 +21,16 @@ brushCInput.addEventListener("input", function (event) {
 
 backgroundInput.addEventListener("input", function (event) {
   backgroundColor = event.target.value;
-  redraw = true;
+  fillBackground();
 });
 
 
 window.addEventListener('resize', function() {
+    canvasBG.width = window.innerWidth;
+    canvasBG.height = window.innerHeight;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    fillBackground();
 });
 
 const mouse = {
@@ -35,10 +43,14 @@ let prevPoint = {
     y: undefined,
 }
 
-// canvas.addEventListener('click', function(event) {
-//     mouse.x = event.x;
-//     mouse.y = event.y;
-// })
+canvas.addEventListener('click', function(event) {
+    mouse.x = event.x;
+    mouse.y = event.y;
+    ctx.fillStyle = brushColor;
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+})
 
 canvas.addEventListener('mousedown', function(event) {
     isDragging = true;
@@ -73,14 +85,13 @@ function drawStroke() {
     ctx.lineWidth = 12;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.stroke();
+    ctx.stroke();        
+}
 
-    if(redraw){
-        redraw = false;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+function fillBackground() {
+    ctxB.clearRect(0, 0, canvas.width, canvas.height);
+    ctxB.fillStyle = backgroundColor;
+    ctxB.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 // function animate() {
