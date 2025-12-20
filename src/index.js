@@ -15,6 +15,10 @@ let backgroundColor = "#FFFFFF";
 const brushCInput = document.getElementById("brushC");
 const backgroundInput = document.getElementById("background");
 
+const strokes = [];
+let currentStroke = null;
+
+
 brushCInput.addEventListener("input", function (event) {
   brushColor = event.target.value;
 });
@@ -31,6 +35,7 @@ window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     fillBackground();
+    redrawAll();
 });
 
 const mouse = {
@@ -56,6 +61,12 @@ canvas.addEventListener('mousedown', function(event) {
     isDragging = true;
     prevPoint.x = event.x;
     prevPoint.y = event.y;
+
+    currentStroke = {
+    color: brushColor,
+    width: 12,
+    points: [{ x: event.clientX, y: event.clientY }]
+  };
 })
 
 canvas.addEventListener('mousemove', function(event) {
@@ -66,11 +77,25 @@ canvas.addEventListener('mousemove', function(event) {
         prevPoint.x = mouse.x;
         prevPoint.y = mouse.y;
     }
+
+    if (!currentStroke) return;
+
+    currentStroke.points.push({
+        x: event.clientX,
+        y: event.clientY
+    });
+
+    redrawAll();
 })
 
 canvas.addEventListener('mouseup', function(event) {
     if (isDragging)
         isDragging = false;
+
+    if (currentStroke) {
+        strokes.push(currentStroke);
+        currentStroke = null;
+    }
 })
 
 canvas.addEventListener('mouseleave', function(event) {
@@ -93,6 +118,36 @@ function fillBackground() {
     ctxB.fillStyle = backgroundColor;
     ctxB.fillRect(0, 0, canvas.width, canvas.height);
 }
+
+function redrawAll() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (const stroke of strokes) {
+    ctx.strokeStyle = stroke.color;
+    ctx.lineWidth = stroke.width;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    ctx.beginPath();
+    stroke.points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+  }
+
+  if (currentStroke) {
+    ctx.strokeStyle = currentStroke.color;
+    ctx.lineWidth = currentStroke.width;
+    ctx.beginPath();
+    currentStroke.points.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+  }
+}
+
 
 // function animate() {
 //     //ctx.clearRect(0, 0, canvas.width, canvas.height);
