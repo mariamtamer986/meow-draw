@@ -3,6 +3,22 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let isDragging = false;
+let brushColor = "#000000";
+let backgroundColor = "#FFFFFF";
+let redraw = false;
+
+const brushCInput = document.getElementById("brushC");
+const backgroundInput = document.getElementById("background");
+
+brushCInput.addEventListener("input", function (event) {
+  brushColor = event.target.value;
+});
+
+backgroundInput.addEventListener("input", function (event) {
+  backgroundColor = event.target.value;
+  redraw = true;
+});
+
 
 window.addEventListener('resize', function() {
     canvas.width = window.innerWidth;
@@ -34,16 +50,7 @@ canvas.addEventListener('mousemove', function(event) {
     if(isDragging){
         mouse.x = event.x;
         mouse.y = event.y;
-
-        ctx.beginPath();
-        ctx.moveTo(prevPoint.x, prevPoint.y);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 12;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.stroke();
-
+        drawStroke();
         prevPoint.x = mouse.x;
         prevPoint.y = mouse.y;
     }
@@ -59,10 +66,21 @@ canvas.addEventListener('mouseleave', function(event) {
 });
 
 function drawStroke() {
-    ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(prevPoint.x, prevPoint.y);
+    ctx.lineTo(mouse.x, mouse.y);
+    ctx.strokeStyle = brushColor;
+    ctx.lineWidth = 12;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    if(redraw){
+        redraw = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 // function animate() {
