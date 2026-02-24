@@ -48,7 +48,7 @@ let prevPoint = {
     y: undefined,
 }
 
-canvas.addEventListener('click', function(event) {
+window.addEventListener('click', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
     ctx.fillStyle = brushColor;
@@ -57,7 +57,7 @@ canvas.addEventListener('click', function(event) {
     ctx.fill();
 })
 
-canvas.addEventListener('mousedown', function(event) {
+window.addEventListener('mousedown', function(event) {
     isDragging = true;
     prevPoint.x = event.x;
     prevPoint.y = event.y;
@@ -69,7 +69,7 @@ canvas.addEventListener('mousedown', function(event) {
   };
 })
 
-canvas.addEventListener('mousemove', function(event) {
+window.addEventListener('mousemove', function(event) {
     if(isDragging){
         mouse.x = event.x;
         mouse.y = event.y;
@@ -88,7 +88,7 @@ canvas.addEventListener('mousemove', function(event) {
     redrawAll();
 })
 
-canvas.addEventListener('mouseup', function(event) {
+window.addEventListener('mouseup', function(event) {
     if (isDragging)
         isDragging = false;
 
@@ -98,8 +98,9 @@ canvas.addEventListener('mouseup', function(event) {
     }
 })
 
-canvas.addEventListener('mouseleave', function(event) {
+window.addEventListener('mouseleave', function(event) {
     isDragging = false;
+    currentStroke = null;
 });
 
 function drawStroke() {
