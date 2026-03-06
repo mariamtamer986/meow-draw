@@ -149,6 +149,18 @@ function redrawAll() {
   }
 }
 
+function getSize() {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight
+  };
+}
+
+window.addEventListener("resize", () => {
+  const { width, height } = getSize();
+  console.log(width, height);
+});
+
 
 // function animate() {
 //     //ctx.clearRect(0, 0, canvas.width, canvas.height);

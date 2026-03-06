@@ -18,8 +18,57 @@
     z-index: -2;
 }
 
-body {
-    width: 15%;
-    height: 100%;
-    border-style: double;
+.frame {
+    position: fixed; /*So when scrolling or resizing, the frame element stays pinned to the screen and it covers the entire window*/
+    inset: 0; /* basically lets us place this element so its edges touch all four edges of the screen, so the .frame container becomes full-screen.*/
+    pointer-events: none; /*to prevent the frame from blocking the canvas drawing (else, mouse clicks would hit the frame instead of the canvas)*/
+    z-index: 10;
 }
+
+.frame img {
+    position: absolute; /*to manually place the elements, ignoring the normal flow of code written in html*/
+}
+
+#top-frame {
+    top: 0;
+    left: 0;
+    width: 100%; /*stretch across the screen*/
+    height: auto; /*scale automatically*/
+}
+
+#bottom-frame {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+}
+
+#left-frame {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+}
+
+#right-frame {
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: auto;
+}
+
+.color-handle {
+    position: absolute;
+}
+
+.hide {
+    display: none;
+}
+
+.container {
+    height: 1vh;
+    display: grid;
+    grid-template-rows: 1fr auto 1fr;
+    grid-template-columns: 1fr auto 1fr;
+}
+

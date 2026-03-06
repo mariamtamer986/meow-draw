@@ -7,27 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="canvas1"></canvas>
-    <canvas id="canvasBG"></canvas>
 
-    <div id="color-picker">
-        <p>Choose your colors:</p>
+    <div class="canvas-layer">
+        <canvas id="canvasBG"></canvas>
+        <canvas id="canvas1"></canvas>
+    </div>
 
-        <div>
-            <input type="color" id="brushC" name="brushC" value="#000000" />
-            <label for="brushC">Brush color</label>
+    <div class="frame">
+        <img src="../assets/frame/frame-t.svg" id="top-frame" />
+        <img src="../assets/frame/frame-r.svg" id="right-frame" />
+        <img src="../assets/frame/frame-l.svg" id="left-frame" />
+        <img src="../assets/frame/frame-b.svg" id="bottom-frame" />
+    </div>
+    
+    <div class="container">
+        <div class="color-cat" id="colorHandle">
+            <img src="../assets/default/colors.svg" id="colorDefault" />
+            <div class="hide" id="color-picker">
+                <div>
+                    <input type="color" id="brushC" name="brushC" value="#000000" />
+                    <label for="brushC">Brush color</label>
+                </div>
+
+                <div>
+                    <input
+                        type="color"
+                        id="background"
+                        name="background"
+                        value="#FFFFFF"
+                        colorspace="display-p3"
+                        alpha />
+                    <label for="background">Background color</label>
+                </div>
+            </div>
         </div>
 
-        <div>
-            <input
-                type="color"
-                id="background"
-                name="background"
-                value="#FFFFFF"
-                colorspace="display-p3"
-                alpha />
-            <label for="background">Background color</label>
-        </div>
+        <div class="sticker-cat"></div>
+        <div class="save-cat"></div>
     </div>
 
     <script src="index.js"></script>
