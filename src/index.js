@@ -13,12 +13,19 @@ let brushColor = "#000000";
 let backgroundColor = "#FFFFFF";
 let stkrs = [];
 
+let eraser = false;
+canvas.addEventListener("contextmenu", e => e.preventDefault());
+
 const brushCInput = document.getElementById("brushC");
 const backgroundInput = document.getElementById("background");
 
 const strokes = [];
 let currentStroke = null;
 let selectedSticker = null;
+
+let saveMenuOpen = false;
+
+
 
 
 brushCInput.addEventListener("input", function (event) {
@@ -59,8 +66,8 @@ let prevPoint = {
 }
 
 canvas.addEventListener('click', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
+    mouse.x = event.offsetX;
+    mouse.y = event.offsetY;
 
     if (selectedSticker) {
         placeSticker(selectedSticker);
@@ -75,46 +82,42 @@ canvas.addEventListener('click', function(event) {
     ctx.fill();
 })
 
-window.addEventListener('mousedown', function(event) {
+canvas.addEventListener('mousedown', function(event) {
     isDragging = true;
-    prevPoint.x = event.x;
-    prevPoint.y = event.y;
+    prevPoint.x = event.offsetX;
+    prevPoint.y = event.offsetY;
+
+    const isRightClick = event.button === 2;
 
     currentStroke = {
-    color: brushColor,
-    width: 12,
-    points: [{ x: event.clientX, y: event.clientY }]
-  };
+        color: isRightClick ? "eraser" : brushColor,
+        width: isRightClick ? 30 : 12,
+        points: [{ x: event.offsetX, y: event.offsetY }]
+    };
 })
 
-window.addEventListener('mousemove', function(event) {
-    if(isDragging){
-        mouse.x = event.x;
-        mouse.y = event.y;
-        drawStroke();
-        prevPoint.x = mouse.x;
-        prevPoint.y = mouse.y;
-    }
+canvas.addEventListener('mousemove', function(event) {
+    if (!isDragging || !currentStroke) return;
 
-    if (!currentStroke) return;
+    const x = event.offsetX;
+    const y = event.offsetY;
 
-    currentStroke.points.push({
-        x: event.clientX,
-        y: event.clientY
-    });
+    currentStroke.points.push({ x, y });
 
     redrawAll();
 })
 
-window.addEventListener('mouseup', function(event) {
-    if (isDragging)
-        isDragging = false;
+window.addEventListener('mouseup', function() {
+
+    if (isDragging) isDragging = false;
 
     if (currentStroke) {
         strokes.push(currentStroke);
         currentStroke = null;
+        redrawAll();
     }
-})
+});
+
 
 window.addEventListener('mouseleave', function(event) {
     isDragging = false;
@@ -137,16 +140,28 @@ function placeSticker(src) {
   stkr.src = src;
 }
 
-function drawStroke() {
-    ctx.beginPath();
-    ctx.moveTo(prevPoint.x, prevPoint.y);
-    ctx.lineTo(mouse.x, mouse.y);
-    ctx.strokeStyle = brushColor;
-    ctx.lineWidth = 12;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();  
-}
+
+// function drawStroke() {
+//     if (!currentStroke) return;
+
+//     ctx.beginPath();
+//     ctx.moveTo(prevPoint.x, prevPoint.y);
+//     ctx.lineTo(mouse.x, mouse.y);
+
+//     ctx.lineWidth = currentStroke.width;
+//     ctx.lineCap = "round";
+//     ctx.lineJoin = "round";
+
+//     if (currentStroke.color === "eraser") {
+//         ctx.globalCompositeOperation = "destination-out";
+//     } else {
+//         ctx.globalCompositeOperation = "source-over";
+//         ctx.strokeStyle = currentStroke.color;
+//     }
+
+//     ctx.stroke();
+//     ctx.globalCompositeOperation = "source-over";
+// }
 
 function fillBackground() {
     ctxB.clearRect(0, 0, canvas.width, canvas.height);
@@ -155,32 +170,36 @@ function fillBackground() {
 }
 
 function redrawAll() {
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (const stroke of strokes) {
-    ctx.strokeStyle = stroke.color;
-    ctx.lineWidth = stroke.width;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+  const allStrokes = [...strokes];
+  if (currentStroke) allStrokes.push(currentStroke);
+
+  for (const stroke of allStrokes) {
 
     ctx.beginPath();
+
     stroke.points.forEach((p, i) => {
       if (i === 0) ctx.moveTo(p.x, p.y);
       else ctx.lineTo(p.x, p.y);
     });
+
+    ctx.lineWidth = stroke.width;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    if (stroke.color === "eraser") {
+      ctx.globalCompositeOperation = "destination-out";
+    } else {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = stroke.color;
+    }
+
     ctx.stroke();
   }
 
-  if (currentStroke) {
-    ctx.strokeStyle = currentStroke.color;
-    ctx.lineWidth = currentStroke.width;
-    ctx.beginPath();
-    currentStroke.points.forEach((p, i) => {
-      if (i === 0) ctx.moveTo(p.x, p.y);
-      else ctx.lineTo(p.x, p.y);
-    });
-    ctx.stroke();
-  }
+  ctx.globalCompositeOperation = "source-over";
 
   for (const s of stkrs) {
     ctx.drawImage(s.img, s.x, s.y, 60, 60);
@@ -199,6 +218,24 @@ window.addEventListener("resize", () => {
   console.log(width, height);
 });
 
+function saveCanvas() {
+
+  const exportCanvas = document.createElement("canvas");
+  const exportCtx = exportCanvas.getContext("2d");
+
+  exportCanvas.width = canvas.width;
+  exportCanvas.height = canvas.height;
+
+  //combine both background and content into one canvas to save/import
+  exportCtx.drawImage(canvasBG, 0, 0);
+  exportCtx.drawImage(canvas, 0, 0);
+
+  const link = document.createElement("a");
+  link.download = "meow-drawing.png";
+  link.href = exportCanvas.toDataURL("image/png");
+  link.click();
+}
+
 
 
 ////////////////////////////////////////////////// UI LOGIC //////////////////////////////////////////////////
@@ -215,7 +252,16 @@ colorBtn.addEventListener("click", () => {
 const saveBtn = document.querySelector(".save-btn");
 
 saveBtn.addEventListener("click", () => {
-    saveBtn.classList.toggle("active");
+        if (!saveMenuOpen) {
+        saveMenuOpen = true;
+        saveBtn.classList.add("active");
+        return;
+    }
+
+    saveCanvas();
+
+    saveMenuOpen = false;
+    saveBtn.classList.remove("active");
 });
 
 const stickerBtn = document.querySelector(".sticker-btn");
