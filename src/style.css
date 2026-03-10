@@ -1,3 +1,11 @@
+
+.playpen-sans-arabic-regular {
+  font-family: "Playpen Sans Arabic", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 #canvas1 {
     position: absolute;
     background: transparent;
@@ -144,4 +152,46 @@
 
     background-image: url("../assets/hover/stickers.svg");
 }
+
+.color-btn.active {
+    width: 400px;
+    height: 400px;
+
+    top: -30px;
+    left: 50px;
+
+    background-image: url("../assets/click/colors.svg");
+}
+
+#color-picker {
+    font-family: "Playpen Sans Arabic", cursive;
+    position: absolute;
+    top: 180px;
+    left: 100px;
+}
+
+.save-btn.active {
+    width: 300px;
+    height: 300px;
+
+    bottom: 10px;
+    left: 85px;
+
+    background-image: url("../assets/click/save.svg");
+}
+
+.sticker-btn.active {
+    width: 500px;
+    height: 500px;
+
+    bottom: -50px;
+    right: 50px;
+
+    background-image: url("../assets/click/stickers.svg");
+}
+
+/* .no-draw {
+    opacity: 0;
+    pointer-events: none;
+} */
 

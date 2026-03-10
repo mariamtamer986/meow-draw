@@ -162,6 +162,30 @@ window.addEventListener("resize", () => {
 });
 
 
+////////////////////////////////////////////////// UI LOGIC //////////////////////////////////////////////////
+
+
+const colorBtn = document.querySelector(".color-btn");
+const colorPkr = document.querySelector("#color-picker");
+
+colorBtn.addEventListener("click", () => {
+    colorBtn.classList.toggle("active");
+    colorPkr.classList.toggle("hide");
+});
+
+const saveBtn = document.querySelector(".save-btn");
+
+saveBtn.addEventListener("click", () => {
+    saveBtn.classList.toggle("active");
+});
+
+const stickerBtn = document.querySelector(".sticker-btn");
+
+stickerBtn.addEventListener("click", () => {
+    stickerBtn.classList.toggle("active");
+});
+
+
 // function animate() {
 //     //ctx.clearRect(0, 0, canvas.width, canvas.height);
 //     drawStroke();
