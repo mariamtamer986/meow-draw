@@ -11,12 +11,14 @@ canvas.height = window.innerHeight;
 let isDragging = false;
 let brushColor = "#000000";
 let backgroundColor = "#FFFFFF";
+let stkrs = [];
 
 const brushCInput = document.getElementById("brushC");
 const backgroundInput = document.getElementById("background");
 
 const strokes = [];
 let currentStroke = null;
+let selectedSticker = null;
 
 
 brushCInput.addEventListener("input", function (event) {
@@ -27,6 +29,14 @@ backgroundInput.addEventListener("input", function (event) {
   backgroundColor = event.target.value;
   fillBackground();
 });
+
+const s = document.querySelectorAll(".sticker");
+s.forEach(st => {
+  const src = (st.style.backgroundImage).slice(5, -2);
+  st.addEventListener("click", () => {
+    selectedSticker = src;
+  });
+})
 
 
 window.addEventListener('resize', function() {
@@ -48,9 +58,17 @@ let prevPoint = {
     y: undefined,
 }
 
-window.addEventListener('click', function(event) {
+canvas.addEventListener('click', function(event) {
     mouse.x = event.x;
     mouse.y = event.y;
+
+    if (selectedSticker) {
+        placeSticker(selectedSticker);
+        selectedSticker = null; // place once
+        redrawAll();
+        return;
+    }
+
     ctx.fillStyle = brushColor;
     ctx.beginPath();
     ctx.arc(mouse.x, mouse.y, 6, 0, Math.PI * 2);
@@ -103,6 +121,22 @@ window.addEventListener('mouseleave', function(event) {
     currentStroke = null;
 });
 
+function placeSticker(src) {
+  const stkr = new Image();
+
+  stkr.onload = function() {
+    stkrs.push({
+      img: stkr,
+      x: mouse.x - 30,
+      y: mouse.y - 30
+    });
+
+    redrawAll();
+  };
+
+  stkr.src = src;
+}
+
 function drawStroke() {
     ctx.beginPath();
     ctx.moveTo(prevPoint.x, prevPoint.y);
@@ -111,7 +145,7 @@ function drawStroke() {
     ctx.lineWidth = 12;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.stroke();        
+    ctx.stroke();  
 }
 
 function fillBackground() {
@@ -147,6 +181,10 @@ function redrawAll() {
     });
     ctx.stroke();
   }
+
+  for (const s of stkrs) {
+    ctx.drawImage(s.img, s.x, s.y, 60, 60);
+  }
 }
 
 function getSize() {
@@ -160,6 +198,7 @@ window.addEventListener("resize", () => {
   const { width, height } = getSize();
   console.log(width, height);
 });
+
 
 
 ////////////////////////////////////////////////// UI LOGIC //////////////////////////////////////////////////
@@ -180,9 +219,11 @@ saveBtn.addEventListener("click", () => {
 });
 
 const stickerBtn = document.querySelector(".sticker-btn");
+const stickers = document.getElementById("stickers-container");
 
 stickerBtn.addEventListener("click", () => {
     stickerBtn.classList.toggle("active");
+    stickers.classList.toggle("hide");
 });
 
 
