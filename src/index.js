@@ -94,6 +94,12 @@ canvas.addEventListener('mousedown', function(event) {
         width: isRightClick ? 30 : 12,
         points: [{ x: event.offsetX, y: event.offsetY }]
     };
+
+    if (isRightClick) {
+        canvas.classList.add("erasing");
+    } else {
+        canvas.classList.remove("erasing");
+    }
 })
 
 canvas.addEventListener('mousemove', function(event) {
@@ -108,6 +114,8 @@ canvas.addEventListener('mousemove', function(event) {
 })
 
 window.addEventListener('mouseup', function() {
+
+    canvas.classList.remove("erasing");
 
     if (isDragging) isDragging = false;
 
@@ -219,22 +227,26 @@ window.addEventListener("resize", () => {
 });
 
 function saveCanvas() {
-
   const exportCanvas = document.createElement("canvas");
   const exportCtx = exportCanvas.getContext("2d");
 
   exportCanvas.width = canvas.width;
   exportCanvas.height = canvas.height;
 
-  //combine both background and content into one canvas to save/import
   exportCtx.drawImage(canvasBG, 0, 0);
+
   exportCtx.drawImage(canvas, 0, 0);
+
+  for (const s of stkrs) {
+    exportCtx.drawImage(s.img, s.x, s.y, 60, 60);
+  }
 
   const link = document.createElement("a");
   link.download = "meow-drawing.png";
   link.href = exportCanvas.toDataURL("image/png");
   link.click();
 }
+
 
 
 
@@ -252,17 +264,18 @@ colorBtn.addEventListener("click", () => {
 const saveBtn = document.querySelector(".save-btn");
 
 saveBtn.addEventListener("click", () => {
-        if (!saveMenuOpen) {
-        saveMenuOpen = true;
-        saveBtn.classList.add("active");
-        return;
-    }
+  if (!saveMenuOpen) {
+    saveMenuOpen = true;
+    saveBtn.classList.add("active");
+    return;
+  }
 
-    saveCanvas();
+  saveCanvas();
 
-    saveMenuOpen = false;
-    saveBtn.classList.remove("active");
+  saveMenuOpen = false;
+  saveBtn.classList.remove("active");
 });
+
 
 const stickerBtn = document.querySelector(".sticker-btn");
 const stickers = document.getElementById("stickers-container");

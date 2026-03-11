@@ -95,6 +95,7 @@
     left: 30px;
 
     background-image: url("../assets/hover/colors.svg");
+    cursor: url("../assets/cursors/click.svg") 16 16, auto;
 }
 
 .save-btn {
@@ -123,6 +124,7 @@
     left: 30px;
 
     background-image: url("../assets/hover/save.svg");
+    cursor: url("../assets/cursors/click.svg") 16 16, auto;
 }
 
 .sticker-btn {
@@ -151,6 +153,7 @@
     right: 30px;
 
     background-image: url("../assets/hover/stickers.svg");
+    cursor: url("../assets/cursors/click.svg") 16 16, auto;
 }
 
 .color-btn.active {
@@ -214,8 +217,16 @@
     cursor: pointer;
 }
 
-/* .no-draw {
-    opacity: 0;
-    pointer-events: none;
-} */
+html {
+    cursor: url("../assets/mouse/default.svg") 16 16, auto;
+}
+
+.erasing {
+    cursor: url("../assets/mouse/eraser.svg") 16 16, auto !important;
+}
+
+button:hover, button:active, input, label {
+    cursor: url("../assets/mouse/click.svg") 16 16, pointer !important;
+}
+
 
